@@ -75,9 +75,25 @@ def delete(task_list, id):
   return {'204': 'task deleted successfully'}
 
 
-@app.route('/api/delete/<source>-<to>/<int:id>/', methods=['POST'])
+@app.route('/api/move/<source>-<to>/<int:id>/', methods=['POST'])
 def move(source, to, id):
-  pass
+  if source == 'new' and to == 'done':
+    task = New_tasks.query.get(id)
+    db.session.add(Completed_tasks(content=task.content, date=task.date))
+
+    db.session.delete(task)
+    db.session.commit()
+  
+  if source == 'new' and to == 'failed':
+    task = New_tasks.query.get(id)
+    db.session.add(Failed_tasks(content=task.content, date=task.date))
+
+    db.session.delete(task)
+    db.session.commit()
+  
+  return {'204': 'task moved successfully'}
+
+
 
 @app.route('/api/<int:id>/')
 def show(id):
